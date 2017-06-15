@@ -59,9 +59,18 @@ module.exports = {
     resolve(this.logined)
   },
 
-  tryLogin: function ({actions, resolve, reject}) {
-    actions.call()
-    // resolve(this.logined)
+  tryLogin: function ({actions, resolve, reject}, loginArgs) {
+    actions.call('.isLogined').then((logined) => {
+      if (logined) {
+        resolve('already logined')
+      } else {
+        actions.call('.login', loginArgs)
+          .then(() => {
+            resolve('just logined')
+          })
+          .catch(reject)
+      }
+    }).catch(reject)
   }
 
 }

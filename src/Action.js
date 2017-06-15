@@ -1,8 +1,10 @@
 class Action {
   constructor (contexts) {
     this._targets = {}
+    this._initedTargets = {}
     this._filters = []
     this._contexts = []
+    this._lastTargetName = ''
     if (contexts instanceof Array) {
       this._contexts = contexts
     } else if (typeof contexts === 'object') {
@@ -30,16 +32,20 @@ class Action {
       if (lastP < 0) return reject(new Error('Action ' + callName + ' is not exists'))
       let targetName = callName.substr(0, lastP)
       let actionName = callName.substr(lastP + 1)
+      if (!targetName && that._lastTargetName) {
+        targetName = that._lastTargetName
+      }
       let targetObject = that._targets[targetName]
-      if (actionName.charAt(0) === '_') return reject(new Error('Method ' + actionName + ' on Action ' + targetName + ' is private'))
-      if (!targetObject) return reject(new Error('Action ' + targetName + ' is not exists when called ' + actionName))
-      if (!targetObject[actionName]) return reject(new Error('Action ' + targetName + ' method ' + actionName + ' is not exists'))
+      if (actionName.charAt(0) === '_') return reject(new Error('Action ' + actionName + ' on ' + targetName + ' is private'))
+      if (!targetObject) return reject(new Error('Target ' + targetName + ' is not exists when called action ' + actionName))
+      if (!targetObject[actionName]) return reject(new Error('Action ' + actionName + ' on ' + targetName + ' is not exists'))
+      that._lastTargetName = targetName
 
       let actionContextArgs = that._makeContextArgs(targetObject, actionName, resolve, reject)
       if (targetObject['_init']) {
-        if (!targetObject['_is_inited']) {
+        if (!that._initedTargets[targetName]) {
           let initResolve = () => {
-            targetObject['_is_inited'] = true
+            that._initedTargets[targetName] = true
             that._callAction(targetObject, actionName, actionContextArgs, actionArgs)
           }
           let initContextArgs = that._makeContextArgs(targetObject, '_init', initResolve, reject)

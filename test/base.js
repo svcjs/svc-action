@@ -1,5 +1,5 @@
 import test from 'ava'
-import {Action} from '../'
+import { Action } from '../'
 import user from './actions/user'
 
 test('isLogin', async t => {
@@ -10,6 +10,16 @@ test('isLogin', async t => {
   })
 })
 
+test('action not exists', async t => {
+  let s = new Action()
+  s.register('user', user)
+  s.call('user.unknowAction').then(() => {
+    t.true(false)
+  }).catch((err) => {
+    t.true(err.message === 'Action unknowAction on user is not exists')
+  })
+})
+
 test('unregister', async t => {
   let s = new Action()
   s.register('user', user)
@@ -17,7 +27,7 @@ test('unregister', async t => {
   s.call('user.isLogined').then((logined) => {
     t.true(false)
   }).catch((err) => {
-    t.true(err.message === 'Action user is not exists when called isLogined')
+    t.true(err.message === 'Target user is not exists when called action isLogined')
   })
 })
 
@@ -71,5 +81,27 @@ test('login failed', async t => {
     t.true(false)
   }).catch(() => {
     t.true(true)
+  })
+})
+
+test('tryLogin', async t => {
+  return new Promise((resolve, reject) => {
+    let s = new Action()
+    user.logined = false
+    s.register('user', user)
+    s.call('user.tryLogin', {userId: 31, password: '123456'}).then((result) => {
+      t.true(result === 'just logined')
+
+      s.call('user.tryLogin', {userId: 31, password: '123456'}).then((result) => {
+        t.true(result === 'already logined')
+        resolve()
+      }).catch(() => {
+        t.true(false)
+        resolve()
+      })
+    }).catch(() => {
+      t.true(false)
+      resolve()
+    })
   })
 })

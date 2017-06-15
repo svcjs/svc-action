@@ -1,15 +1,15 @@
-class IService {
-  register (service) {
+class IAction {
+  register (targetName, targetObject) {
   }
 
-  unregister (service) {
+  unregister (targetName) {
   }
 
-  addFilter (filter) {
+  addFilter (filterObject) {
   }
 
-  call (name, serviceArgs) {
+  call (callName, actionArgs) {
   }
 }
 
-module.exports = IService
+module.exports = IAction
