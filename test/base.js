@@ -1,5 +1,5 @@
 import test from 'ava'
-import { Action } from '../'
+import { Action } from '../src/index'
 import user from './actions/user'
 
 test('isLogin', async t => {

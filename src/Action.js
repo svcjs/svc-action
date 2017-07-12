@@ -1,4 +1,4 @@
-class Action {
+export default class Action {
   constructor (contexts) {
     this._targets = {}
     this._initedTargets = {}
@@ -93,5 +93,3 @@ class Action {
     filterResolve()
   }
 }
-
-module.exports = Action

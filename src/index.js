@@ -1,4 +1,4 @@
-let Action = require('./Action')
-let SimpleChecker = require('./filters/SimpleChecker')
+import Action from './Action'
+import SimpleChecker from './filters/SimpleChecker'
 
-module.exports = {Action: Action, SimpleChecker: SimpleChecker}
+export { Action, SimpleChecker }

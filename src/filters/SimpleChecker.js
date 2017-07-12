@@ -26,7 +26,7 @@ function _cast (type, value) {
 }
 var _checkRegexCache = {}
 
-module.exports = ({target, action, resolve, reject}, args) => {
+export default ({target, action, resolve, reject}, args) => {
 
   let checkDefines = target['_' + action]
   if (typeof checkDefines === 'object') {

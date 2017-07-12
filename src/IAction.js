@@ -1,4 +1,4 @@
-class IAction {
+export default class IAction {
   register (targetName, targetObject) {
   }
 
@@ -11,5 +11,3 @@ class IAction {
   call (callName, actionArgs) {
   }
 }
-
-module.exports = IAction

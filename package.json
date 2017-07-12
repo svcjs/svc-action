@@ -1,8 +1,10 @@
 {
   "name": "svc-action",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "a action freamwork",
-  "main": "src/index.js",
+  "main": "dist/svc-action.cjs.js",
+  "module": "dist/svc-action.es.js",
+  "jsnext:main": "dist/svc-action.es.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/svcjs/svc-action.git"
@@ -20,8 +22,18 @@
     "lint": "standard --fix rollup.config.js test/** src/**",
     "test": "nyc ava test/*.js",
     "test-watch": "watch -p '+(test|src)/**/*.js' -c 'ava test/*.js'",
-    "build": "rm -rf dist && rollup -c",
-    "build-min": "uglifyjs ./dist/Action.js -o ./dist/Action.min.js -c warnings=false -m"
+    "build": "rm -rf dist && rollup -c && uglifyjs ./dist/svc-action.js -o ./dist/svc-action.min.js -c warnings=false -m",
+    "test-build": "chmod +x test.sh && ./test.sh dist/svc-action.cjs && ./test.sh dist/svc-action.es && ./test.sh dist/svc-action && ./test.sh dist/svc-action.min && ./test.sh",
+    "build-all": "npm run lint && npm run test && npm run build && npm run test-build"
+  },
+  "ava": {
+    "require": "babel-register",
+    "babel": "inherit"
+  },
+  "babel": {
+    "plugins": [
+      "transform-es2015-modules-commonjs"
+    ]
   },
   "devDependencies": {
     "ava": "^0.19.1",

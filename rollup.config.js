@@ -4,8 +4,11 @@ import resolve from 'rollup-plugin-node-resolve'
 
 export default {
   entry: 'src/index.js',
-  dest: 'dist/Action.js',
-  format: 'umd',
+  targets: [
+    { dest: 'dist/svc-action.js', format: 'umd' },
+    { dest: 'dist/svc-action.cjs.js', format: 'cjs' },
+    { dest: 'dist/svc-action.es.js', format: 'es' }
+  ],
   moduleName: 'svc-action',
   plugins: [
     babel({

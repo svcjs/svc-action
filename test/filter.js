@@ -1,5 +1,5 @@
 import test from 'ava'
-import { Action, SimpleChecker } from '../'
+import { Action, SimpleChecker } from '../src/index'
 import user from './actions/user'
 
 test('testChecker', async t => {
@@ -55,7 +55,7 @@ test('bad password', async t => {
   s.call('user.login', {userId: '31', password: 12345}).then(() => {
     t.true(false)
   }).catch((err) => {
-    t.true(err.message.startsWith('[CHECK FAILED] password:[12345] check failed with (value) => {'))
+    t.true(err.message.startsWith('[CHECK FAILED] password:[12345] check failed with value'))
   })
 })
 
