@@ -1,6 +1,6 @@
 {
   "name": "svc-action",
-  "version": "0.0.5",
+  "version": "0.1.1",
   "description": "a action freamwork",
   "main": "dist/svc-action.cjs.js",
   "module": "dist/svc-action.es.js",

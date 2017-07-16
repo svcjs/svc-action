@@ -9,7 +9,7 @@ export default {
     { dest: 'dist/svc-action.cjs.js', format: 'cjs' },
     { dest: 'dist/svc-action.es.js', format: 'es' }
   ],
-  moduleName: 'svc-action',
+  moduleName: 'svcAction',
   plugins: [
     babel({
       babelrc: false,
