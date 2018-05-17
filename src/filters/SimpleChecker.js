@@ -35,7 +35,7 @@ export default ({target, action, resolve, reject}, args) => {
       let value = args[field]
       if (value === undefined) {
         if (define.require) {
-          return reject(new Error('[CHECK FAILED] ' + field + ' is requird'))
+          return reject(new Error(define.message || '[CHECK FAILED] ' + field + ' is requird'))
         }
       } else {
         if (define.type) {
@@ -51,7 +51,7 @@ export default ({target, action, resolve, reject}, args) => {
             checkOk = strValue.match(_checkRegexCache[define.checker]) !== null
           }
           if (!checkOk) {
-            return reject(new Error('[CHECK FAILED] ' + field + ':[' + value + '] check failed with ' + define.checker))
+            return reject(new Error(define.message || '[CHECK FAILED] ' + field + ':[' + value + '] check failed with ' + define.checker))
           }
         }
       }
