@@ -1,0 +1,10 @@
+.*
+!.gitignore
+!.npmignore
+!.gitlab-ci.yml
+!.eslintrc
+/package-lock.json
+/coverage
+/node_modules
+/dist
+/pub

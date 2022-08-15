@@ -1,6 +1,6 @@
 {
   "name": "svc-action",
-  "version": "0.1.2",
+  "version": "0.1.9",
   "description": "a action freamwork",
   "main": "dist/svc-action.cjs.js",
   "module": "dist/svc-action.es.js",
@@ -22,7 +22,7 @@
     "lint": "standard --fix rollup.config.js test/** src/**",
     "test": "nyc ava test/*.js",
     "test-watch": "watch -p '+(test|src)/**/*.js' -c 'ava test/*.js'",
-    "build": "rm -rf dist && rollup -c && uglifyjs ./dist/svc-action.js -o ./dist/svc-action.min.js -c warnings=false -m",
+    "build": "rm -rf dist && rollup -c && uglifyjs ./dist/svc-action.js -o ./dist/svc-action.min.js -m",
     "test-build": "chmod +x test.sh && ./test.sh dist/svc-action.cjs && ./test.sh dist/svc-action.es && ./test.sh dist/svc-action && ./test.sh dist/svc-action.min && ./test.sh",
     "build-all": "npm run lint && npm run test && npm run build && npm run test-build"
   },

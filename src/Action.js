@@ -13,7 +13,13 @@ export default class Action {
   }
 
   register (targetName, targetObject) {
-    this._targets[targetName] = targetObject
+    if (typeof targetName === 'object') {
+      for (let k in targetName) {
+        this._targets[k] = targetName[k]
+      }
+    } else {
+      this._targets[targetName] = targetObject
+    }
   }
 
   unregister (targetName) {
@@ -26,40 +32,63 @@ export default class Action {
 
   call (callName, actionArgs) {
     let that = this
-    return new Promise(function (resolve, reject) {
-      if (!actionArgs) actionArgs = {}
-      let lastP = callName.lastIndexOf('.')
-      if (lastP < 0) return reject(new Error('Action ' + callName + ' is not exists'))
-      let targetName = callName.substr(0, lastP)
-      let actionName = callName.substr(lastP + 1)
-      if (!targetName && that._lastTargetName) {
-        targetName = that._lastTargetName
-      }
-      let targetObject = that._targets[targetName]
-      if (actionName.charAt(0) === '_') return reject(new Error('Action ' + actionName + ' on ' + targetName + ' is private'))
-      if (!targetObject) return reject(new Error('Target ' + targetName + ' is not exists when called action ' + actionName))
-      if (!targetObject[actionName]) return reject(new Error('Action ' + actionName + ' on ' + targetName + ' is not exists'))
-      that._lastTargetName = targetName
+    if (!actionArgs) actionArgs = {}
 
-      let actionContextArgs = that._makeContextArgs(targetObject, actionName, resolve, reject)
-      if (targetObject['_init']) {
-        if (!that._initedTargets[targetName]) {
-          let initResolve = () => {
-            that._initedTargets[targetName] = true
-            that._callAction(targetObject, actionName, actionContextArgs, actionArgs)
-          }
-          let initContextArgs = that._makeContextArgs(targetObject, '_init', initResolve, reject)
-          targetObject['_init'](initContextArgs)
-          return
+    return new Promise(function (realResolve, realReject) {
+      new Promise(function (resolve, reject) {
+        let lastP = callName.lastIndexOf('.')
+        if (lastP < 0) return reject(new Error('Action ' + callName + ' is not exists'))
+        let targetName = callName.substr(0, lastP)
+        let actionName = callName.substr(lastP + 1)
+        if (!targetName && that._lastTargetName) {
+          targetName = that._lastTargetName
         }
-      }
+        let targetObject = that._targets[targetName]
 
-      that._callAction(targetObject, actionName, actionContextArgs, actionArgs)
+        // 支持多层级的对象
+        if (!targetObject && targetName.indexOf('.') !== -1) {
+          targetObject = that._targets
+          for (let subTargetName of targetName.split('.')) {
+            targetObject = targetObject[subTargetName]
+            if (!targetObject) break
+          }
+        }
+
+        if (actionName.charAt(0) === '_') return reject(new Error('Action ' + actionName + ' on ' + targetName + ' is private'))
+        if (!targetObject) return reject(new Error('Target ' + targetName + ' is not exists when called action ' + actionName))
+        if (!targetObject[actionName]) return reject(new Error('Action ' + actionName + ' on ' + targetName + ' is not exists'))
+        that._lastTargetName = targetName
+
+        let actionContextArgs = that._makeContextArgs(targetObject, actionName, resolve, reject)
+        actionContextArgs.calls = { name: callName, args: actionArgs, resolve, reject }
+        if (targetObject['_init']) {
+          if (!that._initedTargets[targetName]) {
+            let initResolve = () => {
+              that._initedTargets[targetName] = true
+              that._callAction(targetObject, actionName, actionContextArgs, actionArgs)
+            }
+            let initContextArgs = that._makeContextArgs(targetObject, '_init', initResolve, reject)
+            targetObject['_init'](initContextArgs)
+            return
+          }
+        }
+        that._callAction(targetObject, actionName, actionContextArgs, actionArgs)
+      }).then(r => {
+        realResolve(r)
+      }).catch(r => {
+        realReject(r)
+      })
     })
   }
 
   _makeContextArgs (targetObject, actionName, resolve, reject) {
-    let contextArgs = {target: targetObject, action: actionName, actions: this, resolve: resolve, reject: reject}
+    let contextArgs = {
+      target: targetObject,
+      action: actionName,
+      actions: this,
+      resolve: resolve,
+      reject: reject,
+    }
     for (let context of this._contexts) {
       for (let key in context) {
         if (!contextArgs[key]) {
